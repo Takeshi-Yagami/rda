@@ -703,7 +703,7 @@
 
 <body>
 
-    <h1>R 打</h1>
+    <h1>R打オンライン</h1>
 
     <div id="game-stage">
         <div id="hud-top">
@@ -1528,7 +1528,8 @@
             container.style.display = 'none';
 
             try {
-                const res = await fetch(RANKING_API_URL);
+                // キャッシュを防ぐためタイムスタンプパラメータを付与
+                const res = await fetch(`${RANKING_API_URL}?t=${Date.now()}`);
                 const list = await res.json();
 
                 tbody.innerHTML = '';

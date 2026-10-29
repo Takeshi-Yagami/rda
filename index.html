@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
-    <title>R 打</title>
+    <title>R打オンライン</title>
     <style>
         /* --- 全体のレイアウト --- */
         body {
@@ -16,16 +17,20 @@
             min-height: 100vh;
         }
 
-        h1 { margin: 10px 0; font-size: 20px; color: #888; }
+        h1 {
+            margin: 10px 0;
+            font-size: 20px;
+            color: #888;
+        }
 
         /* --- ゲーム画面の枠 --- */
         #game-stage {
             position: relative;
             width: 800px;
-            height: 450px;
+            height: 520px;
             background: #333;
             border-radius: 15px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -45,26 +50,33 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            /* ボタンの縦位置合わせ */
             font-weight: bold;
             font-size: 24px;
-            background: rgba(0,0,0,0.3);
+            background: rgba(0, 0, 0, 0.3);
             z-index: 10;
         }
-        .scale{
+
+        .scale {
             display: flex;
             width: 33.33%;
-            flex-basis: 33%;;
+            flex-basis: 33%;
+            ;
         }
-        .scale1{
+
+        .scale1 {
             justify-content: flex-start;
         }
-        .scale2{
+
+        .scale2 {
             justify-content: center;
         }
-        .scale3{
+
+        .scale3 {
             justify-content: flex-end;
         }
 
+        /* リセットボタン */
         #reset-btn {
             background: #ff4444;
             color: white;
@@ -74,8 +86,12 @@
             border-radius: 5px;
             cursor: pointer;
             display: none;
+            /* ゲーム中のみ表示 */
         }
-        #reset-btn:hover { background: #ff6666; }
+
+        #reset-btn:hover {
+            background: #ff6666;
+        }
 
         #time-bar-container {
             position: absolute;
@@ -85,6 +101,7 @@
             height: 10px;
             background: #444;
         }
+
         #time-bar {
             width: 100%;
             height: 100%;
@@ -97,31 +114,149 @@
             position: relative;
             background: #fdfdfd;
             color: #333;
-            width: 600px;
-            padding: 30px;
-            border-radius: 50px;
+            width: 640px;
+            padding: 20px 30px 18px;
+            border-radius: 40px;
             text-align: center;
-            box-shadow: 0 8px 0 #ccc, 0 15px 20px rgba(0,0,0,0.3);
+            box-shadow: 0 8px 0 #ccc, 0 15px 20px rgba(0, 0, 0, 0.3);
             transform: scale(1);
             transition: transform 0.1s;
         }
-        .bounce { animation: bounceAnim 0.1s; }
-        @keyframes bounceAnim { 0%{transform:scale(1);} 50%{transform:scale(1.05);} 100%{transform:scale(1);} }
 
-        .shake-screen { animation: shakeAnim 0.3s; }
-        @keyframes shakeAnim { 
-            0% { transform: translate(0, 0); } 
-            25% { transform: translate(-5px, 0); } 
-            75% { transform: translate(5px, 0); } 
-            100% { transform: translate(0, 0); } 
+        .bounce {
+            animation: bounceAnim 0.1s;
         }
 
-        #target-display { font-size: 48px; font-weight: bold; margin-bottom: 5px; min-height: 60px; line-height: 1.2; word-break: break-all;}
-        #romaji-display { font-size: 24px; color: #888; font-family: monospace; height: 30px;}
+        @keyframes bounceAnim {
+            0% {
+                transform: scale(1);
+            }
 
-        .typed { color: #ccc; }
-        .current { border-bottom: 3px solid #ff9900; color: #333; }
-        .remaining { color: #333; opacity: 0.6; }
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .shake-screen {
+            animation: shakeAnim 0.3s;
+        }
+
+        @keyframes shakeAnim {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            25% {
+                transform: translate(-5px, 0);
+            }
+
+            75% {
+                transform: translate(5px, 0);
+            }
+
+            100% {
+                transform: translate(0, 0);
+            }
+        }
+
+        #target-display {
+            font-size: 42px;
+            font-weight: bold;
+            margin-bottom: 2px;
+            min-height: 52px;
+            line-height: 1.2;
+            word-break: break-all;
+        }
+
+        #romaji-display {
+            font-size: 20px;
+            color: #888;
+            font-family: monospace;
+            height: 26px;
+        }
+
+        .typed {
+            color: #ccc;
+        }
+
+        .current {
+            border-bottom: 3px solid #ff9900;
+            color: #333;
+        }
+
+        .remaining {
+            color: #333;
+            opacity: 0.6;
+        }
+
+        /* --- R学習用：説明とコード例エリア --- */
+        #word-info-area {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #d1d5db;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        #desc-display {
+            font-size: 14px;
+            color: #4b5563;
+            min-height: 20px;
+            line-height: 1.4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .desc-badge {
+            background: #e5e7eb;
+            color: #374151;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 1px 6px;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        #example-display {
+            min-height: 26px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .code-chip {
+            display: inline-flex;
+            align-items: center;
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 3px 12px;
+            font-family: Consolas, 'SFMono-Regular', Monaco, Menlo, monospace;
+            font-size: 13px;
+            color: #0284c7;
+            max-width: 95%;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+            white-space: nowrap;
+            overflow-x: auto;
+        }
+
+        .code-chip .code-label {
+            font-size: 10px;
+            font-weight: bold;
+            color: #9ca3af;
+            margin-right: 8px;
+            user-select: none;
+        }
 
         /* --- コンボ --- */
         #combo-display {
@@ -135,13 +270,19 @@
             opacity: 0;
             transition: opacity 0.2s;
         }
-        .show-combo { opacity: 1 !important; }
+
+        .show-combo {
+            opacity: 1 !important;
+        }
 
         /* --- オーバーレイ --- */
         #overlay {
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -150,10 +291,16 @@
             color: white;
             transition: opacity 0.3s;
         }
-        #overlay-title { font-size: 40px; margin-bottom: 20px; font-weight: bold; }
+
+        #overlay-title {
+            font-size: 36px;
+            margin-bottom: 12px;
+            font-weight: bold;
+        }
+
         #overlay-btn {
-            padding: 15px 40px;
-            font-size: 24px;
+            padding: 12px 38px;
+            font-size: 22px;
             background: #ff9900;
             color: white;
             border: none;
@@ -162,59 +309,421 @@
             box-shadow: 0 5px 0 #cc7a00;
             transition: transform 0.1s, box-shadow 0.1s;
         }
-        #overlay-btn:active { transform: translateY(4px); box-shadow: 0 1px 0 #cc7a00; }
-        .hidden { display: none !important; }
 
-        /* --- 設定エリア開閉ボタン --- */
-        #toggle-config-btn {
-            margin-top: 20px;
-            background: #444;
-            color: #ccc;
-            border: 1px solid #666;
+        #overlay-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #cc7a00;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* --- リザルトカードスタイル --- */
+        .result-card {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 16px;
+            padding: 14px 24px;
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            width: 440px;
+            box-sizing: border-box;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(8px);
+            animation: resultPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes resultPop {
+            from {
+                transform: scale(0.85);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .result-grade-container {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+
+        .result-grade-label {
+            font-size: 13px;
+            font-weight: bold;
+            color: #94a3b8;
+            letter-spacing: 1px;
+        }
+
+        .result-grade-badge {
+            font-size: 50px;
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: 1px;
+        }
+
+        .grade-s-plus {
+            background: linear-gradient(135deg, #ffe066 0%, #ff6b6b 50%, #4ecdc4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.7));
+            animation: glowAnim 2s infinite alternate;
+        }
+
+        @keyframes glowAnim {
+            from {
+                filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.5));
+            }
+
+            to {
+                filter: drop-shadow(0 0 14px rgba(255, 107, 107, 0.9));
+            }
+        }
+
+        .grade-s {
+            color: #f59e0b;
+            text-shadow: 0 0 12px rgba(245, 158, 11, 0.6);
+        }
+
+        .grade-a {
+            color: #10b981;
+            text-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
+        }
+
+        .grade-b {
+            color: #0ea5e9;
+            text-shadow: 0 0 12px rgba(14, 165, 233, 0.6);
+        }
+
+        .grade-c {
+            color: #a855f7;
+            text-shadow: 0 0 12px rgba(168, 85, 247, 0.6);
+        }
+
+        .grade-d {
+            color: #94a3b8;
+        }
+
+        .result-grade-title {
+            font-size: 15px;
+            font-weight: bold;
+            color: #f1f5f9;
+            letter-spacing: 0.5px;
+        }
+
+        .result-score-val {
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+            font-family: Consolas, 'SFMono-Regular', monospace;
+            letter-spacing: 1px;
+        }
+
+        .result-stats-grid {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            padding: 8px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+
+        .stat-val {
+            font-size: 15px;
+            font-weight: bold;
+            color: #f8fafc;
+            font-family: Consolas, monospace;
+        }
+
+        .result-comment {
+            font-size: 12.5px;
+            color: #cbd5e1;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        /* --- ランキング登録ボックス --- */
+        .ranking-submit-box {
+            margin-top: 8px;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(255, 255, 255, 0.2);
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .submit-input-group {
+            display: flex;
+            gap: 6px;
+            width: 90%;
+            justify-content: center;
+        }
+
+        .submit-input-group input {
+            flex: 1;
+            max-width: 220px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(0, 0, 0, 0.4);
+            color: white;
+            font-size: 13px;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .submit-input-group input:focus {
+            border-color: #ff9900;
+        }
+
+        .submit-input-group button {
+            padding: 6px 16px;
+            background: #ff9900;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+            white-space: nowrap;
+            transition: background 0.2s;
+        }
+
+        .submit-input-group button:hover {
+            background: #ffa726;
+        }
+
+        .submit-input-group button:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+
+        #submit-status-msg {
+            font-size: 12px;
+            color: #4ade80;
+            min-height: 16px;
+        }
+
+        /* --- サブボタン＆アクションボタン --- */
+        .sub-btn {
+            padding: 12px 26px;
+            font-size: 18px;
+            background: #475569;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #334155;
+            transition: transform 0.1s, box-shadow 0.1s, background 0.2s;
+        }
+
+        .sub-btn:hover {
+            background: #64748b;
+        }
+
+        .sub-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #334155;
+        }
+
+        .action-btn {
+            background: #ff9900;
+            color: white;
+            border: none;
             padding: 8px 20px;
             border-radius: 20px;
             cursor: pointer;
             font-size: 14px;
+            font-weight: bold;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .action-btn:hover {
+            background: #ffa726;
+        }
+
+        /* --- ランキングモーダル --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+            animation: fadeIn 0.2s;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            width: 580px;
+            max-width: 92%;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            overflow: hidden;
+            color: #f1f5f9;
+        }
+
+        .modal-header {
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #334155;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #ffcc00;
+        }
+
+        .modal-close-btn {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 26px;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .modal-close-btn:hover {
+            color: white;
+        }
+
+        .modal-body {
+            padding: 16px 20px;
+            overflow-y: auto;
+            min-height: 220px;
+        }
+
+        .ranking-loading {
+            text-align: center;
+            padding: 40px 0;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .ranking-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .ranking-table th {
+            color: #94a3b8;
+            border-bottom: 1px solid #334155;
+            padding: 10px 8px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .ranking-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #2d3b4e;
+        }
+
+        .rank-1 {
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        .rank-2 {
+            color: #e2e8f0;
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        .rank-3 {
+            color: #cd7f32;
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        .ranking-score {
+            font-family: Consolas, monospace;
+            font-weight: bold;
+            color: #38bdf8;
+            font-size: 14px;
+        }
+
+        .modal-footer {
+            padding: 12px 20px;
+            border-top: 1px solid #334155;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        button.sm-btn {
+            padding: 6px 16px;
+            font-size: 13px;
+            background: #475569;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
             transition: background 0.2s;
         }
-        #toggle-config-btn:hover { background: #555; color: white; }
 
-        /* --- 設定エリア --- */
-        #config-area {
-            display: none; 
-            margin-top: 15px;
-            background: #eee;
-            padding: 20px;
-            border-radius: 10px;
-            width: 600px;
-            color: #333;
-            text-align: left;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            animation: fadeIn 0.3s;
+        button.sm-btn:hover {
+            background: #64748b;
         }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-
-        textarea { width: 100%; height: 80px; margin-top: 5px; box-sizing: border-box; }
-        .config-btns { margin-top: 10px; }
-        button.sm-btn { padding: 5px 15px; font-size: 14px; background: #666; color: white; border: none; border-radius: 3px; cursor: pointer; }
-        button.save-btn { background: #0088cc; }
-        button.save-btn:hover { background: #0099ee; }
     </style>
 </head>
+
 <body>
 
     <h1>R 打</h1>
 
     <div id="game-stage">
         <div id="hud-top">
-            <div class="scale scale1"><div id="score-display">SCORE: 0</div></div>
-            <div class="scale scale2"><button id="reset-btn" onclick="gameManager.resetGame()">STOP / RESET</button></div>
-            <div class="scale scale3"><div id="timer-text">60.0</div></div>
+            <div class="scale scale1">
+                <div id="score-display">SCORE: 0</div>
+            </div>
+            <div class="scale scale2"><button id="reset-btn" onclick="gameManager.resetGame()">STOP / RESET</button>
+            </div>
+            <div class="scale scale3">
+                <div id="timer-text">60.0</div>
+            </div>
         </div>
 
         <div id="plate-area">
             <div id="target-display">Ready?</div>
             <div id="romaji-display"></div>
+            <div id="word-info-area" style="display: none;">
+                <div id="desc-display"></div>
+                <div id="example-display"></div>
+            </div>
         </div>
 
         <div id="combo-display">0 COMBO!</div>
@@ -224,44 +733,214 @@
         </div>
 
         <div id="overlay">
-            <div id="overlay-title">Rを正しく入力しよう!</div>
-            <div id="result-score" style="font-size: 20px; margin-bottom: 20px; display:none;"></div>
-            <button id="overlay-btn" onclick="gameManager.startGame()">START</button>
-            <p style="font-size:14px; margin-top:15px; color:#aaa;">Spaceキーでもスタートできます</p>
+            <div id="overlay-title">表示されるRを正しく入力しよう!</div>
+            <div id="result-score" style="font-size: 20px; margin-bottom: 12px; display:none;"></div>
+            <div id="overlay-btn-group" style="display: flex; gap: 14px; align-items: center;">
+                <button id="overlay-btn" onclick="gameManager.startGame()">START</button>
+                <button id="overlay-ranking-btn" class="sub-btn" onclick="openRankingModal()">🏆 ランキング</button>
+            </div>
+            <p id="space-start-tip" style="font-size:14px; margin-top:14px; color:#aaa;">Spaceキーでもスタートできます</p>
         </div>
     </div>
 
-    <button id="toggle-config-btn" onclick="toggleConfig()">▼ 単語リスト設定を開く</button>
+    <div style="display: flex; gap: 12px; align-items: center; margin-top: 20px;">
+        <button class="action-btn" onclick="openRankingModal()">🏆 ランキングを見る</button>
+        <button class="sub-btn" style="font-size: 14px; padding: 8px 18px; border-radius: 20px;"
+            onclick="openWordListModal()">📖 収録単語一覧 (全102語)</button>
+    </div>
 
-    <div id="config-area">
-        <h3 style="margin-top:0;">単語リスト編集</h3>
-        <p style="font-size:12px; color:#666; margin-bottom:5px;">
-            【制限】漢字・カタカナは使えません。<br>
-            ひらがな、半角英数字、記号のみ入力してください。
-        </p>
-        <textarea id="word-input"></textarea>
-        <div class="config-btns">
-            <button class="sm-btn save-btn" onclick="saveData()">保存して閉じる</button>
-            <button class="sm-btn" onclick="resetDefault()" style="margin-left:10px;">初期化して閉じる</button>
+    <!-- 収録単語一覧モーダル（閲覧専用・R学習リファレンス） -->
+    <div id="wordlist-modal" class="modal-overlay" style="display: none;" onclick="closeWordListModal(event)">
+        <div class="modal-content" style="width: 720px;" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3>📖 収録単語・R構文リファレンス (全102語)</h3>
+                <button class="modal-close-btn" onclick="closeWordListModal()">&times;</button>
+            </div>
+            <div style="padding: 12px 20px 0;">
+                <input type="text" id="wordlist-search" placeholder="単語やキーワードで検索（例: dplyr, 平均, ggplot）..."
+                    oninput="filterWordList()"
+                    style="width: 100%; padding: 8px 14px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; font-size: 13px; box-sizing: border-box; outline: none;" />
+            </div>
+            <div class="modal-body" style="max-height: 420px;">
+                <table class="ranking-table" style="font-size: 12.5px;">
+                    <thead>
+                        <tr>
+                            <th style="width: 130px;">単語</th>
+                            <th>解説</th>
+                            <th>コード例</th>
+                        </tr>
+                    </thead>
+                    <tbody id="wordlist-tbody"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer" style="justify-content: space-between; align-items: center;">
+                <span id="wordlist-count" style="font-size: 12px; color: #94a3b8;">102 語表示中</span>
+                <button class="sm-btn" onclick="closeWordListModal()">閉じる</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ランキングモーダル -->
+    <div id="ranking-modal" class="modal-overlay" style="display: none;" onclick="closeRankingModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3>🏆 全国ハイスコアランキング TOP 10</h3>
+                <button class="modal-close-btn" onclick="closeRankingModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="ranking-loading" class="ranking-loading">ランキングを取得中...</div>
+                <div id="ranking-list-container" style="display: none;">
+                    <table class="ranking-table">
+                        <thead>
+                            <tr>
+                                <th>順位</th>
+                                <th>プレイヤー</th>
+                                <th>スコア</th>
+                                <th>グレード</th>
+                                <th>正確率</th>
+                                <th>日付</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ranking-tbody"></tbody>
+                    </table>
+                </div>
+                <div
+                    style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #334155; font-size: 11.5px; color: #94a3b8;">
+                    <div style="font-weight: bold; color: #cbd5e1; margin-bottom: 6px;">🏆 スコア・グレード判定基準（60秒スコア）:</div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 6px 14px;">
+                        <span><strong style="color: #ffd700;">S+</strong> 18,000点〜 <span
+                                style="color:#64748b;">(神速)</span></span>
+                        <span><strong style="color: #f59e0b;">S</strong> 13,000点〜 <span
+                                style="color:#64748b;">(達人)</span></span>
+                        <span><strong style="color: #10b981;">A</strong> 8,500点〜 <span
+                                style="color:#64748b;">(上級)</span></span>
+                        <span><strong style="color: #0ea5e9;">B</strong> 5,000点〜 <span
+                                style="color:#64748b;">(実務)</span></span>
+                        <span><strong style="color: #a855f7;">C</strong> 2,500点〜 <span
+                                style="color:#64748b;">(初級)</span></span>
+                        <span><strong style="color: #94a3b8;">D</strong> 2,500点未満 <span
+                                style="color:#64748b;">(練習中)</span></span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="sm-btn" onclick="closeRankingModal()">閉じる</button>
+            </div>
         </div>
     </div>
 
     <script>
-        const GAME_DURATION = 30;
+        const GAME_DURATION = 60;
 
         const DEFAULT_WORDS = [
-            "function", "library", "return", "if", "else", "for", "while", "TRUE", "FALSE", "NULL", 
-            "NA", "Inf", "next", "break", "c", "list", "vector", "matrix", "data.frame", "factor", 
-            "length", "names", "dim", "nrow", "ncol", "print", "cat", "paste", "paste0", "sprintf", 
-            "seq", "rep", "rev", "sort", "order", "unique", "sum", "mean", "median", "sd", 
-            "var", "min", "max", "range", "summary", "apply", "lapply", "sapply", "vapply", "tapply", 
-            "class", "typeof", "str", "head", "tail", "rm", "gc", "install.packages", "setwd", "getwd", 
-            "tidyverse", "dplyr", "ggplot2", "filter", "select", "mutate", "arrange", "rename", "group_by", 
-            "summarise", "ungroup", "pull", "distinct", "slice", "count", "bind_rows", "left_join", "inner_join", 
-            "pivot_longer", "pivot_wider", "ggplot", "aes", "geom_point", "geom_line", "geom_bar", "geom_histogram", 
-            "read.csv", "read_csv", "write_csv", "readRDS", "saveRDS", "df", "data", "x", "y", "i", 
-            "j", "res", "result", "value", "path", "na.rm"
+            { word: "function", desc: "独自の関数を定義する", example: "add <- function(a, b) { a + b }" },
+            { word: "library", desc: "パッケージを読み込んで利用可能にする", example: "library(dplyr)" },
+            { word: "return", desc: "関数の戻り値を明示して処理を終了する", example: "return(result)" },
+            { word: "if", desc: "条件を満たすときに処理を実行する", example: "if (x > 0) print('Positive')" },
+            { word: "else", desc: "if条件を満たさない場合の分岐処理", example: "if (x > 0) 1 else -1" },
+            { word: "for", desc: "ベクトルやリストの要素を順にループ処理する", example: "for (i in 1:5) print(i)" },
+            { word: "while", desc: "条件がTRUEの間ループ処理を繰り返す", example: "while (x < 10) x <- x + 1" },
+            { word: "TRUE", desc: "論理値の「真」を表す基本定数（Tと略記可）", example: "is_valid <- TRUE" },
+            { word: "FALSE", desc: "論理値の「偽」を表す基本定数（Fと略記可）", example: "flag <- FALSE" },
+            { word: "NULL", desc: "値が存在しない・空であることを表す", example: "x <- NULL" },
+            { word: "NA", desc: "欠損値（Not Available）を表す定数", example: "v <- c(1, 2, NA, 4)" },
+            { word: "Inf", desc: "無限大（Infinity）を表す定数", example: "1 / 0  # -> Inf" },
+            { word: "next", desc: "ループの現在の反復をスキップして次に進む", example: "if (i == 3) next" },
+            { word: "break", desc: "ループ処理を途中で強制終了して抜ける", example: "if (x > 100) break" },
+            { word: "c", desc: "複数の値を結合してベクトルを作成する", example: "x <- c(10, 20, 30)" },
+            { word: "list", desc: "異なる型を混在して格納できるリストを作成", example: "lst <- list(name='Alice', age=25)" },
+            { word: "vector", desc: "型と長さを指定して空のベクトルを初期化", example: "v <- vector('numeric', length=5)" },
+            { word: "matrix", desc: "行数・列数を指定して2次元行列を作成する", example: "m <- matrix(1:6, nrow=2, ncol=3)" },
+            { word: "data.frame", desc: "列ごとに異なる型を保持できる表形式データを作成", example: "df <- data.frame(id=1:3, val=c('a','b','c'))" },
+            { word: "factor", desc: "カテゴリカルデータ（因子型ベクトル）を作成", example: "f <- factor(c('low', 'med', 'high'))" },
+            { word: "length", desc: "ベクトルやリストの要素数を取得する", example: "length(x)" },
+            { word: "names", desc: "オブジェクトの要素名（列名など）を取得・設定", example: "names(df)" },
+            { word: "dim", desc: "行列やデータフレームの次元（行数・列数）を取得", example: "dim(df)  # -> c(行数, 列数)" },
+            { word: "nrow", desc: "データフレームや行列の行数を取得する", example: "nrow(df)" },
+            { word: "ncol", desc: "データフレームや行列の列数を取得する", example: "ncol(df)" },
+            { word: "print", desc: "オブジェクトの内容をコンソールに出力する", example: "print(df)" },
+            { word: "cat", desc: "文字列や値を連結して改行なしで直接出力する", example: "cat('Result:', score, '\\n')" },
+            { word: "paste", desc: "複数の文字列を区切り文字で結合する", example: "paste('Item', 1:3, sep='_')" },
+            { word: "paste0", desc: "複数の文字列を区切り文字なしで直結する", example: "paste0('file_', 1:3, '.csv')" },
+            { word: "sprintf", desc: "書式指定フォーマットに従って文字列を整形する", example: "sprintf('Score: %.1f', 95.67)" },
+            { word: "seq", desc: "等差数列（連続した数値ベクトル）を生成する", example: "seq(from=1, to=10, by=2)" },
+            { word: "rep", desc: "値やベクトルを指定した回数繰り返し複製する", example: "rep(1:3, times=3)" },
+            { word: "rev", desc: "ベクトルの要素の並び順を逆順にする", example: "rev(c('a', 'b', 'c'))" },
+            { word: "sort", desc: "ベクトルの要素を昇順または降順に並べ替える", example: "sort(x, decreasing=TRUE)" },
+            { word: "order", desc: "ソート後のインデックス（並び順の添え字）を返す", example: "df[order(df$score), ]" },
+            { word: "unique", desc: "ベクトル内の重複した要素を取り除いて返す", example: "unique(c(1, 1, 2, 3, 3))" },
+            { word: "sum", desc: "数値ベクトルの総和（合計）を計算する", example: "sum(x, na.rm=TRUE)" },
+            { word: "mean", desc: "数値ベクトルの算術平均値を計算する", example: "mean(x, na.rm=TRUE)" },
+            { word: "median", desc: "数値ベクトルの中央値（メディアン）を計算する", example: "median(x, na.rm=TRUE)" },
+            { word: "sd", desc: "数値ベクトルの標本標準偏差を計算する", example: "sd(x, na.rm=TRUE)" },
+            { word: "var", desc: "数値ベクトルの標本分散を計算する", example: "var(x, na.rm=TRUE)" },
+            { word: "min", desc: "ベクトル内の最小値を取得する", example: "min(x, na.rm=TRUE)" },
+            { word: "max", desc: "ベクトル内の最大値を取得する", example: "max(x, na.rm=TRUE)" },
+            { word: "range", desc: "最小値と最大値のペア（値の範囲）を返す", example: "range(x, na.rm=TRUE)" },
+            { word: "summary", desc: "データの要約統計量やモデルの統計情報を表示", example: "summary(df)" },
+            { word: "apply", desc: "行列や配列の行・列ごとに関数を適用する", example: "apply(mat, MARGIN=1, sum)" },
+            { word: "lapply", desc: "リストやベクトルの各要素に関数を適用しリストで返す", example: "lapply(1:3, function(n) n^2)" },
+            { word: "sapply", desc: "lapplyの結果を可能な限りベクトルや行列に簡約", example: "sapply(1:3, function(n) n^2)" },
+            { word: "vapply", desc: "戻り値の型を明示して安全に関数を反復適用する", example: "vapply(1:3, sqrt, numeric(1))" },
+            { word: "tapply", desc: "グループ因子ごとにベクトルを集計・関数適用する", example: "tapply(df$score, df$group, mean)" },
+            { word: "class", desc: "オブジェクトのクラス（型・オブジェクト種別）を返す", example: "class(df)" },
+            { word: "typeof", desc: "オブジェクトの内部的な基本型（C水準の型）を返す", example: "typeof(x)" },
+            { word: "str", desc: "オブジェクトの構造（型・サイズ・概要）を表示", example: "str(df)" },
+            { word: "head", desc: "データの先頭行（デフォルト6行）を取得する", example: "head(df, n=5)" },
+            { word: "tail", desc: "データの末尾行（デフォルト6行）を取得する", example: "tail(df, n=5)" },
+            { word: "rm", desc: "メモリ上の指定した変数を削除して解放する", example: "rm(temp_df)" },
+            { word: "gc", desc: "ガベージコレクションを実行し不要メモリを回収", example: "gc()" },
+            { word: "install.packages", desc: "CRANリポジトリから外部パッケージを導入する", example: "install.packages('tidyverse')" },
+            { word: "setwd", desc: "現在の作業ディレクトリ（Working Dir）を変更する", example: "setwd('~/projects/analysis')" },
+            { word: "getwd", desc: "現在の作業ディレクトリの絶対パスを取得する", example: "getwd()" },
+            { word: "tidyverse", desc: "データサイエンス向け主要パッケージ群のメタパッケージ", example: "library(tidyverse)" },
+            { word: "dplyr", desc: "データフレーム操作・加工に特化した文法パッケージ", example: "library(dplyr)" },
+            { word: "ggplot2", desc: "グラフィックス文法に基づく高品質グラフ描画パッケージ", example: "library(ggplot2)" },
+            { word: "filter", desc: "指定した条件に合致する行を抽出する（dplyr）", example: "df %>% filter(age >= 20)" },
+            { word: "select", desc: "データフレームから必要な列を選択・抽出する（dplyr）", example: "df %>% select(id, name, score)" },
+            { word: "mutate", desc: "新しい列を追加、または既存列を加工更新する（dplyr）", example: "df %>% mutate(total = price * count)" },
+            { word: "arrange", desc: "指定した列の値を基準に行を並べ替える（dplyr）", example: "df %>% arrange(desc(score))" },
+            { word: "rename", desc: "列の名前を変更する（新名称 = 旧名称）（dplyr）", example: "df %>% rename(user_id = id)" },
+            { word: "group_by", desc: "指定列でグループ化しグループ毎の集計を可能にする（dplyr）", example: "df %>% group_by(category)" },
+            { word: "summarise", desc: "各グループの要約統計量を計算・集計する（dplyr）", example: "df %>% summarise(avg = mean(score))" },
+            { word: "ungroup", desc: "group_byによるグループ化設定を解除する（dplyr）", example: "df %>% ungroup()" },
+            { word: "pull", desc: "データフレームの特定列を1つのベクトルとして抽出（dplyr）", example: "df %>% pull(score)" },
+            { word: "distinct", desc: "重複する行を取り除いて一意な行のみを残す（dplyr）", example: "df %>% distinct(category)" },
+            { word: "slice", desc: "行番号やインデックスを指定して行を切り出す（dplyr）", example: "df %>% slice(1:10)" },
+            { word: "count", desc: "グループごとのデータ件数を数えて集計表を作成（dplyr）", example: "df %>% count(category, sort=TRUE)" },
+            { word: "bind_rows", desc: "複数のデータフレームを縦方向（行方向）に結合（dplyr）", example: "bind_rows(df_2023, df_2024)" },
+            { word: "left_join", desc: "左側のデータを基準にキー列で外部結合する（dplyr）", example: "left_join(users, orders, by='user_id')" },
+            { word: "inner_join", desc: "両方のデータに共通するキーの行のみを内部結合（dplyr）", example: "inner_join(df1, df2, by='id')" },
+            { word: "pivot_longer", desc: "横持ちの列データを縦持ち（ロング形式）に変換（tidyr）", example: "df %>% pivot_longer(cols=c(q1, q2))" },
+            { word: "pivot_wider", desc: "縦持ちの行データを横持ち（ワイド形式）に変換（tidyr）", example: "df %>% pivot_wider(names_from=key, values_from=val)" },
+            { word: "ggplot", desc: "ggplot2によるグラフ描画キャンバスを初期化する", example: "ggplot(df, aes(x=x, y=y))" },
+            { word: "aes", desc: "データの列をグラフの視覚属性（軸・色・形）に対応付け", example: "aes(x=wt, y=mpg, color=cyl)" },
+            { word: "geom_point", desc: "散布図をプロットするジオムレイヤーを追加する", example: "ggplot(df, aes(x, y)) + geom_point()" },
+            { word: "geom_line", desc: "折れ線グラフをプロットするジオムレイヤーを追加する", example: "ggplot(df, aes(x, y)) + geom_line()" },
+            { word: "geom_bar", desc: "棒グラフ（度数や集計値）を描画するレイヤーを追加", example: "ggplot(df, aes(x=cat)) + geom_bar()" },
+            { word: "geom_histogram", desc: "連続変数の度数分布（ヒストグラム）を描画するレイヤー", example: "ggplot(df, aes(x=val)) + geom_histogram()" },
+            { word: "read.csv", desc: "CSVファイルをデータフレームとして読み込む（基本機能）", example: "df <- read.csv('data.csv')" },
+            { word: "read_csv", desc: "CSVファイルを高速・型安全に読み込む（readr）", example: "df <- read_csv('data.csv')" },
+            { word: "write_csv", desc: "データフレームをCSVファイルとして書き出す（readr）", example: "write_csv(df, 'output.csv')" },
+            { word: "readRDS", desc: "単一のRオブジェクトをRDSファイルから読み込み復元", example: "model <- readRDS('model.rds')" },
+            { word: "saveRDS", desc: "単一のRオブジェクトをRDS形式でファイルに保存", example: "saveRDS(model, 'model.rds')" },
+            { word: "df", desc: "データフレーム（dataframe）を格納する代表的な変数名", example: "df <- data.frame(x=1:5, y=6:10)" },
+            { word: "data", desc: "組み込みデータセットのロード関数、またはデータ変数名", example: "data(iris)" },
+            { word: "x", desc: "入力引数や汎用ベクトル・説明変数を表す標準変数名", example: "x <- seq(1, 100, length.out=50)" },
+            { word: "y", desc: "回帰分析の目的変数や散布図の縦軸などに使われる標準変数名", example: "y <- 2 * x + rnorm(length(x))" },
+            { word: "i", desc: "forループのカウンタや行の添え字として慣習的に使う変数名", example: "for (i in seq_along(vec)) print(vec[i])" },
+            { word: "j", desc: "行列や2重ループで列や第2インデックスに使われる変数名", example: "mat[i, j]" },
+            { word: "res", desc: "計算結果（result）を一時的に保持する慣用変数名", example: "res <- calculate_metrics(data)" },
+            { word: "result", desc: "関数の実行結果や検定・モデルの出力結果を格納する変数名", example: "result <- t.test(group_a, group_b)" },
+            { word: "value", desc: "値や測定値、pivot_longerのデフォルト値列名", example: "value <- 42" },
+            { word: "path", desc: "ファイルパスやディレクトリのパス文字列を格納する変数名", example: "path <- 'data/processed/clean.csv'" },
+            { word: "na.rm", desc: "計算実行時にNA（欠損値）を除外するか否かを指定する引数", example: "mean(x, na.rm=TRUE)" }
         ];
+
+        const DEFAULT_WORD_MAP = DEFAULT_WORDS.reduce((acc, item) => {
+            acc[item.word] = item;
+            return acc;
+        }, {});
 
         // ---------------------------------------------------------
         // 1. ローマ字変換テーブル（一部のみ抜粋）
@@ -369,7 +1048,7 @@
                 }
 
                 if (this.isFinished()) return;
-                
+
                 const char = this.targetText[this.charIndex];
                 if (ROMAJI_MAP[char]) {
                     this.currentCandidates = [...ROMAJI_MAP[char]];
@@ -417,12 +1096,75 @@
             }
         }
 
+        /* --- ランキングAPI（Google Apps Script） --- */
+        const RANKING_API_URL = "https://script.google.com/macros/s/AKfycbwChzT30LxFdGLnvXF--6nWBwUVomRJT0QbZG7EKRdYNgLIgDAngvZAvaWKcxRo-0caig/exec";
+
+        /* --- スコア・グレード判定テーブル --- */
+        const GRADE_RANKS = [
+            {
+                rank: "S+",
+                minScore: 18000,
+                className: "grade-s-plus",
+                title: "神速のRエンジニア",
+                comment: "人間離れした打鍵速度！Rの達人レベルです！"
+            },
+            {
+                rank: "S",
+                minScore: 13000,
+                className: "grade-s",
+                title: "Tidyverseマスター",
+                comment: "驚異的なスピード！あらゆるデータ処理を高速化できます！"
+            },
+            {
+                rank: "A",
+                minScore: 8500,
+                className: "grade-a",
+                title: "熟練のデータサイエンティスト",
+                comment: "非常に速い！実務でもストレスなくコードを書ける実力です！"
+            },
+            {
+                rank: "B",
+                minScore: 5000,
+                className: "grade-b",
+                title: "頼れるRアナリスト",
+                comment: "十分なスピード！Rの基本構文がしっかり身についています！"
+            },
+            {
+                rank: "C",
+                minScore: 2500,
+                className: "grade-c",
+                title: "駆け出しRプログラマー",
+                comment: "まずは正確さを意識して、どんどん打っていきましょう！"
+            },
+            {
+                rank: "D",
+                minScore: 0,
+                className: "grade-d",
+                title: "Rビギナー",
+                comment: "焦らずキーボードの配置とRコードに慣れていきましょう！"
+            }
+        ];
+
+        function getGradeInfo(score) {
+            for (const g of GRADE_RANKS) {
+                if (score >= g.minScore) {
+                    return g;
+                }
+            }
+            return GRADE_RANKS[GRADE_RANKS.length - 1];
+        }
+
         class GameManager {
             constructor() {
                 this.engine = new TypingEngine();
                 this.wordList = [];
+                this.currentWordData = null;
                 this.score = 0;
                 this.combo = 0;
+                this.maxCombo = 0;
+                this.wordsCompleted = 0;
+                this.correctKeyCount = 0;
+                this.missKeyCount = 0;
                 this.timeLeft = GAME_DURATION;
                 this.isPlaying = false;
                 this.timerId = null;
@@ -434,6 +1176,9 @@
                     timerBar: document.getElementById('time-bar'),
                     target: document.getElementById('target-display'),
                     romaji: document.getElementById('romaji-display'),
+                    infoArea: document.getElementById('word-info-area'),
+                    desc: document.getElementById('desc-display'),
+                    example: document.getElementById('example-display'),
                     plate: document.getElementById('plate-area'),
                     combo: document.getElementById('combo-display'),
                     overlay: document.getElementById('overlay'),
@@ -448,40 +1193,55 @@
             }
 
             loadWords() {
-                const saved = localStorage.getItem('typing-words');
-                this.wordList = saved ? JSON.parse(saved) : [...DEFAULT_WORDS];
-                document.getElementById('word-input').value = this.wordList.join('\n');
+                // ランキングの公平性を保つため、常に公式のDEFAULT_WORDSを使用（改ざん防止）
+                this.wordList = [...DEFAULT_WORDS];
             }
 
             startGame() {
                 this.score = 0;
                 this.combo = 0;
+                this.maxCombo = 0;
+                this.wordsCompleted = 0;
+                this.correctKeyCount = 0;
+                this.missKeyCount = 0;
                 this.timeLeft = GAME_DURATION;
                 this.isPlaying = true;
                 this.lastWordIndex = null;
-                
+                this.currentWordData = null;
+
                 this.updateHUD();
                 this.dom.overlay.classList.add('hidden');
                 this.dom.resultScore.style.display = 'none';
-                this.dom.resetBtn.style.display = 'block';
-                
+                this.dom.resultScore.innerHTML = '';
+                this.dom.resetBtn.style.display = 'block'; // ボタンを表示
+
                 this.nextWord();
-                
+
                 if (this.timerId) clearInterval(this.timerId);
                 this.timerId = setInterval(() => this.tick(), 100);
             }
 
+            // ゲーム中断・リセット処理
             resetGame() {
                 this.isPlaying = false;
                 clearInterval(this.timerId);
+                this.currentWordData = null;
+
+                // オーバーレイを初期状態に戻す
                 this.dom.overlayTitle.textContent = "TYPING GAME";
+                this.dom.resultScore.innerHTML = '';
                 this.dom.resultScore.style.display = 'none';
                 this.dom.overlayBtn.textContent = "START";
                 this.dom.overlay.classList.remove('hidden');
                 this.dom.resetBtn.style.display = 'none';
+
+                // お皿の中身をリセット
                 this.dom.target.textContent = "Ready?";
                 this.dom.romaji.textContent = "";
+                if (this.dom.infoArea) this.dom.infoArea.style.display = 'none';
                 this.dom.combo.classList.remove('show-combo');
+
+                // ゲージを満タンに
                 this.dom.timerBar.style.width = "100%";
                 this.dom.timerBar.style.background = 'linear-gradient(90deg, #00ff88, #00cc6a)';
                 this.dom.timerText.textContent = GAME_DURATION.toFixed(1);
@@ -499,13 +1259,102 @@
             finishGame() {
                 this.isPlaying = false;
                 clearInterval(this.timerId);
-                
+                this.currentWordData = null;
+                if (this.dom.infoArea) this.dom.infoArea.style.display = 'none';
+
+                const grade = getGradeInfo(this.score);
+                const totalKeys = this.correctKeyCount + this.missKeyCount;
+                const accuracy = totalKeys > 0 ? ((this.correctKeyCount / totalKeys) * 100).toFixed(1) : "0.0";
+                const savedName = localStorage.getItem('player-name') || '';
+
                 this.dom.overlayTitle.textContent = "TIME UP!";
-                this.dom.resultScore.textContent = `SCORE: ${this.score}`;
+                this.dom.resultScore.innerHTML = `
+                    <div class="result-card">
+                        <div class="result-grade-container">
+                            <span class="result-grade-label">GRADE</span>
+                            <span class="result-grade-badge ${grade.className}">${grade.rank}</span>
+                        </div>
+                        <div class="result-grade-title">${this.escapeHtml(grade.title)}</div>
+                        <div class="result-score-val">SCORE: ${this.score.toLocaleString()}</div>
+                        <div class="result-stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-label">単語数</span>
+                                <span class="stat-val">${this.wordsCompleted} 語</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">MAXコンボ</span>
+                                <span class="stat-val">${this.maxCombo} 回</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">正確率</span>
+                                <span class="stat-val">${accuracy}%</span>
+                            </div>
+                        </div>
+                        <div class="result-comment">${this.escapeHtml(grade.comment)}</div>
+                        <div class="ranking-submit-box">
+                            <div style="font-size: 12px; color: #cbd5e1; font-weight: bold;">🏆 ランキングにスコアを登録</div>
+                            <div class="submit-input-group">
+                                <input type="text" id="player-name-input" maxlength="10" placeholder="名前 (10文字以内)" value="${this.escapeHtml(savedName)}" />
+                                <button id="submit-score-btn" onclick="gameManager.handleScoreSubmit('${grade.rank}', '${accuracy}')">登録する</button>
+                            </div>
+                            <div id="submit-status-msg"></div>
+                        </div>
+                    </div>
+                `;
                 this.dom.resultScore.style.display = 'block';
                 this.dom.overlayBtn.textContent = "RETRY";
                 this.dom.overlay.classList.remove('hidden');
-                this.dom.resetBtn.style.display = 'none';
+                this.dom.resetBtn.style.display = 'none'; // ボタンを隠す
+            }
+
+            async handleScoreSubmit(gradeRank, accuracy) {
+                const input = document.getElementById('player-name-input');
+                const btn = document.getElementById('submit-score-btn');
+                const msg = document.getElementById('submit-status-msg');
+
+                if (!input || !btn || !msg) return;
+
+                const name = input.value.trim();
+                if (!name) {
+                    alert("名前を入力してください。");
+                    input.focus();
+                    return;
+                }
+
+                localStorage.setItem('player-name', name);
+                btn.disabled = true;
+                btn.textContent = "送信中...";
+                msg.style.color = "#94a3b8";
+                msg.textContent = "サーバーに登録しています...";
+
+                try {
+                    const payload = {
+                        name: name,
+                        score: this.score,
+                        grade: gradeRank,
+                        accuracy: accuracy
+                    };
+
+                    const res = await fetch(RANKING_API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const data = await res.json();
+                    if (data.status === 'success') {
+                        msg.style.color = "#4ade80";
+                        msg.innerHTML = "✅ 登録完了！ <a href='javascript:void(0)' onclick='openRankingModal()' style='color:#38bdf8; text-decoration:underline; font-weight:bold;'>ランキングを見る</a>";
+                        btn.textContent = "登録済";
+                    } else {
+                        throw new Error(data.message || "登録に失敗しました");
+                    }
+                } catch (e) {
+                    msg.style.color = "#f87171";
+                    msg.textContent = "登録エラー: " + (e.message || "通信失敗");
+                    btn.disabled = false;
+                    btn.textContent = "再試行";
+                }
             }
 
             nextWord() {
@@ -519,8 +1368,12 @@
                     } while (nextIndex === this.lastWordIndex);
                 }
                 this.lastWordIndex = nextIndex;
-                const word = this.wordList[nextIndex];
-                this.engine.setWord(word);
+                const item = this.wordList[nextIndex];
+                const wordData = typeof item === 'string'
+                    ? (DEFAULT_WORD_MAP[item] || { word: item, desc: "", example: "" })
+                    : item;
+                this.currentWordData = wordData;
+                this.engine.setWord(wordData.word);
                 this.render();
             }
 
@@ -528,17 +1381,23 @@
                 if (!this.isPlaying) return;
 
                 const isCorrect = this.engine.input(key);
-                
+
                 if (isCorrect) {
+                    this.correctKeyCount++;
                     this.score += 10 + (this.combo * 2);
                     this.combo++;
+                    if (this.combo > this.maxCombo) {
+                        this.maxCombo = this.combo;
+                    }
                     this.playPlateAnimation();
-                    
+
                     if (this.engine.isFinished()) {
                         this.score += 100;
+                        this.wordsCompleted++;
                         this.nextWord();
                     }
                 } else {
+                    this.missKeyCount++;
                     this.combo = 0;
                     this.playShakeAnimation();
                 }
@@ -549,7 +1408,7 @@
             updateHUD() {
                 this.dom.score.textContent = `SCORE: ${this.score}`;
                 this.dom.timerText.textContent = this.timeLeft.toFixed(1);
-                
+
                 if (this.combo > 1) {
                     this.dom.combo.textContent = `${this.combo} COMBO!`;
                     this.dom.combo.classList.add('show-combo');
@@ -559,25 +1418,62 @@
 
                 const percent = (this.timeLeft / GAME_DURATION) * 100;
                 this.dom.timerBar.style.width = `${percent}%`;
-                
+
                 if (percent < 20) this.dom.timerBar.style.background = '#ff4444';
                 else this.dom.timerBar.style.background = 'linear-gradient(90deg, #00ff88, #00cc6a)';
             }
 
+            escapeHtml(str) {
+                if (!str) return '';
+                return String(str)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+            }
+
             render() {
                 const { finished, current, remaining, guide } = this.engine.getStatus();
-                this.dom.target.innerHTML = 
-                    `<span class="typed">${finished}</span>` +
-                    `<span class="current">${current}</span>` +
-                    `<span class="remaining">${remaining}</span>`;
-                
+                this.dom.target.innerHTML =
+                    `<span class="typed">${this.escapeHtml(finished)}</span>` +
+                    `<span class="current">${this.escapeHtml(current)}</span>` +
+                    `<span class="remaining">${this.escapeHtml(remaining)}</span>`;
+
                 if (!this.engine.isFinished()) {
                     const tLen = this.engine.typedString.length;
-                    this.dom.romaji.innerHTML = 
-                        `<span class="typed">${guide.substring(0, tLen)}</span>` +
-                        guide.substring(tLen);
+                    this.dom.romaji.innerHTML =
+                        `<span class="typed">${this.escapeHtml(guide.substring(0, tLen))}</span>` +
+                        this.escapeHtml(guide.substring(tLen));
                 } else {
                     this.dom.romaji.innerHTML = "";
+                }
+
+                // ★ R学習用：説明とコード例の表示
+                if (this.isPlaying && this.currentWordData) {
+                    let hasInfo = false;
+
+                    if (this.currentWordData.desc) {
+                        this.dom.desc.innerHTML = `<span class="desc-badge">解説</span><span>${this.escapeHtml(this.currentWordData.desc)}</span>`;
+                        this.dom.desc.style.display = 'flex';
+                        hasInfo = true;
+                    } else {
+                        this.dom.desc.innerHTML = '';
+                        this.dom.desc.style.display = 'none';
+                    }
+
+                    if (this.currentWordData.example) {
+                        this.dom.example.innerHTML = `<div class="code-chip"><span class="code-label">例</span><code>${this.escapeHtml(this.currentWordData.example)}</code></div>`;
+                        this.dom.example.style.display = 'flex';
+                        hasInfo = true;
+                    } else {
+                        this.dom.example.innerHTML = '';
+                        this.dom.example.style.display = 'none';
+                    }
+
+                    this.dom.infoArea.style.display = hasInfo ? 'flex' : 'none';
+                } else {
+                    if (this.dom.infoArea) this.dom.infoArea.style.display = 'none';
                 }
             }
 
@@ -586,7 +1482,7 @@
                 void this.dom.plate.offsetWidth;
                 this.dom.plate.classList.add('bounce');
             }
-            
+
             playShakeAnimation() {
                 this.dom.stage.classList.remove('shake-screen');
                 void this.dom.stage.offsetWidth;
@@ -597,8 +1493,14 @@
         const gameManager = new GameManager();
 
         document.addEventListener('keydown', (e) => {
-            const configArea = document.getElementById('config-area');
-            if (configArea.style.display === 'block') return;
+            const rankingModal = document.getElementById('ranking-modal');
+            const wordlistModal = document.getElementById('wordlist-modal');
+            const activeEl = document.activeElement;
+
+            // モーダルが開いている場合や入力フォームフォーカス時はゲーム入力を無効化
+            if (rankingModal && rankingModal.style.display === 'flex') return;
+            if (wordlistModal && wordlistModal.style.display === 'flex') return;
+            if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA')) return;
 
             if (e.code === 'Space' && !gameManager.isPlaying) {
                 e.preventDefault();
@@ -611,59 +1513,133 @@
             }
         });
 
-        function toggleConfig() {
-            const area = document.getElementById('config-area');
-            const btn = document.getElementById('toggle-config-btn');
-            
-            if (area.style.display === 'none' || area.style.display === '') {
-                area.style.display = 'block';
-                btn.textContent = "▲ 設定を閉じる";
-            } else {
-                area.style.display = 'none';
-                btn.textContent = "▼ 単語リスト設定を開く";
-                btn.blur();
+        // --- ランキングモーダルの制御 ---
+        async function openRankingModal() {
+            const modal = document.getElementById('ranking-modal');
+            const loading = document.getElementById('ranking-loading');
+            const container = document.getElementById('ranking-list-container');
+            const tbody = document.getElementById('ranking-tbody');
+
+            if (!modal || !loading || !container || !tbody) return;
+
+            modal.style.display = 'flex';
+            loading.style.display = 'block';
+            loading.textContent = "ランキングを取得中...";
+            container.style.display = 'none';
+
+            try {
+                const res = await fetch(RANKING_API_URL);
+                const list = await res.json();
+
+                tbody.innerHTML = '';
+                if (!list || list.length === 0) {
+                    loading.style.display = 'block';
+                    loading.textContent = "登録されているスコアはまだありません。";
+                    return;
+                }
+
+                list.forEach((item, idx) => {
+                    const tr = document.createElement('tr');
+                    const rankNum = item.rank || (idx + 1);
+                    let rankDisplay = `#${rankNum}`;
+                    let rankClass = "";
+                    if (rankNum === 1) { rankDisplay = "🥇 1位"; rankClass = "rank-1"; }
+                    else if (rankNum === 2) { rankDisplay = "🥈 2位"; rankClass = "rank-2"; }
+                    else if (rankNum === 3) { rankDisplay = "🥉 3位"; rankClass = "rank-3"; }
+
+                    let dateStr = "";
+                    if (item.date) {
+                        const d = new Date(item.date);
+                        if (!isNaN(d.getTime())) {
+                            dateStr = `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`;
+                        } else {
+                            dateStr = String(item.date).split('T')[0] || String(item.date).split(' ')[0] || "";
+                        }
+                    }
+
+                    tr.innerHTML = `
+                        <td class="${rankClass}">${rankDisplay}</td>
+                        <td style="font-weight:bold; color:#f8fafc;">${gameManager.escapeHtml(item.name || "名無し")}</td>
+                        <td class="ranking-score">${Number(item.score).toLocaleString()}</td>
+                        <td><span class="desc-badge">${gameManager.escapeHtml(item.grade || "-")}</span></td>
+                        <td>${item.accuracy ? item.accuracy + "%" : "-"}</td>
+                        <td style="color:#64748b; font-size:11px;">${dateStr}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                loading.style.display = 'none';
+                container.style.display = 'block';
+            } catch (err) {
+                loading.style.display = 'block';
+                loading.innerHTML = `<span style="color:#f87171;">ランキングの取得に失敗しました。<br><button class="sm-btn" onclick="openRankingModal()" style="margin-top:8px;">再試行</button></span>`;
             }
         }
 
-        window.saveData = function() {
-            const val = document.getElementById('word-input').value;
-            const list = val.split('\n').map(w => w.trim()).filter(w=>w);
-            
-            if(list.length === 0){
-                alert("単語を1つ以上入力してください。");
+        function closeRankingModal(e) {
+            if (e && e.target && e.target.id !== 'ranking-modal' && !e.target.classList.contains('modal-close-btn') && !e.target.classList.contains('sm-btn')) {
+                return;
+            }
+            const modal = document.getElementById('ranking-modal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        // --- 収録単語一覧モーダルの制御（閲覧専用） ---
+        function openWordListModal() {
+            const modal = document.getElementById('wordlist-modal');
+            const searchInput = document.getElementById('wordlist-search');
+            if (searchInput) searchInput.value = '';
+            renderWordList(DEFAULT_WORDS);
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function closeWordListModal(e) {
+            if (e && e.target && e.target.id !== 'wordlist-modal' && !e.target.classList.contains('modal-close-btn') && !e.target.classList.contains('sm-btn')) {
+                return;
+            }
+            const modal = document.getElementById('wordlist-modal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function filterWordList() {
+            const query = (document.getElementById('wordlist-search').value || '').trim().toLowerCase();
+            if (!query) {
+                renderWordList(DEFAULT_WORDS);
+                return;
+            }
+            const filtered = DEFAULT_WORDS.filter(item => {
+                return item.word.toLowerCase().includes(query) ||
+                    (item.desc && item.desc.toLowerCase().includes(query)) ||
+                    (item.example && item.example.toLowerCase().includes(query));
+            });
+            renderWordList(filtered);
+        }
+
+        function renderWordList(list) {
+            const tbody = document.getElementById('wordlist-tbody');
+            const countEl = document.getElementById('wordlist-count');
+            if (!tbody) return;
+
+            tbody.innerHTML = '';
+            if (countEl) countEl.textContent = `${list.length} 語表示中`;
+
+            if (list.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:24px; color:#94a3b8;">該当する単語が見つかりませんでした</td></tr>';
                 return;
             }
 
-            const invalidCharRegex = /[^\u0020-\u007E\u3040-\u309Fー、。]/;
-            const invalidWords = [];
-            for (let word of list) {
-                if (invalidCharRegex.test(word)) {
-                    invalidWords.push(word);
-                }
-            }
-
-            if (invalidWords.length > 0) {
-                alert("保存できませんでした。\n禁止文字が含まれています：\n" + invalidWords.join(", "));
-                return;
-            }
-
-            gameManager.wordList = list;
-            localStorage.setItem('typing-words', JSON.stringify(list));
-            alert("保存しました。");
-            toggleConfig();
-        };
-
-        // ★修正点：初期化後に自動で設定画面を閉じる
-        window.resetDefault = function() {
-            if(confirm("リストを初期状態に戻しますか？")) {
-                localStorage.removeItem('typing-words');
-                gameManager.loadWords();
-                alert("初期化しました。");
-                // 設定画面を閉じる
-                toggleConfig();
-            }
-        };
+            list.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight:bold; color:#f1f5f9; font-family:Consolas, monospace;">${gameManager.escapeHtml(item.word)}</td>
+                    <td style="color:#cbd5e1;">${gameManager.escapeHtml(item.desc || "-")}</td>
+                    <td><code style="background:#0f172a; border:1px solid #334155; padding:3px 8px; border-radius:4px; color:#38bdf8; font-family:Consolas, monospace; font-size:12px;">${gameManager.escapeHtml(item.example || "-")}</code></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
 
     </script>
 </body>
+
 </html>
